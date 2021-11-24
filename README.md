@@ -1,4 +1,4 @@
 # perfect
 
-> finding (reall) perfect squares
+> finding (real) perfect squares
 
