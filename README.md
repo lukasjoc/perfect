@@ -1,4 +1,4 @@
 # perfect
 
-> finding (real) perfect squares
+> exploring perfect squares in go
 
