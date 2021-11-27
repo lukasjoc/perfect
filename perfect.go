@@ -144,6 +144,16 @@ func (s *Square) isPerfect() (isPerfect bool) {
 
     return isPerfect
 }
+// Prints the values to the console
+func (s *Square) showValues() {
+    for i := 0; i < len(s.Shape[0].Values); i++ {
+        for _, d := range s.Shape[i].Values {
+            fmt.Printf("|%d", d);
+        }
+        fmt.Printf("|\n")
+    }
+}
+
 
 func main() {
     // A demo Square
@@ -168,6 +178,7 @@ func main() {
     }
 
     // fmt.Printf("square generated = %#v\n", s)
+    s.showValues()
     fmt.Printf("square has perfect rows = %v\n", s.hasPerfectRows())
     fmt.Printf("square has perfect cols = %v\n", s.hasPerfectCols())
     fmt.Printf("square has perfect diagnonals = %v\n", s.hasPerfectDiagonals())
