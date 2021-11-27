@@ -64,9 +64,9 @@ func (r *Row) calculateSum() uint64 {
 
 // SquareSpec defines Characteristics that define when a Square is perfect
 type SquareSpec struct {
-    perfectCols bool
-    perfectRows bool
-    perfectDiagonals bool
+    PerfectCols bool
+    PerfectRows bool
+    PerfectDiagonals bool
 }
 
 // Sqaure is a 2D Matrix of Rows
@@ -130,9 +130,19 @@ func (s *Square) hasPerfectDiagonals() bool {
 }
 
 // isPerfect tests a Square against its spec
-func (s *Square) isPerfect() bool {
-    panic("TODO: isPerfect is not implemented yet!!")
-    return false
+func (s *Square) isPerfect() (isPerfect bool) {
+    if s.Spec.PerfectRows && s.hasPerfectRows()  { isPerfect = true}
+    if s.Spec.PerfectRows && !s.hasPerfectRows() { return false }
+    if !s.Spec.PerfectRows && s.hasPerfectRows() { return false }
+
+    if s.Spec.PerfectCols && s.hasPerfectCols()  { isPerfect = true }
+    if !s.Spec.PerfectCols && s.hasPerfectCols() { return false }
+
+    if s.Spec.PerfectDiagonals && s.hasPerfectDiagonals()  { isPerfect = true }
+    if s.Spec.PerfectDiagonals && !s.hasPerfectDiagonals() { return false }
+    if !s.Spec.PerfectDiagonals && s.hasPerfectDiagonals() { return false }
+
+    return isPerfect
 }
 
 func main() {
@@ -144,23 +154,23 @@ func main() {
             // 2 Rows 2 Values
             // 4.Rows 4 Values
             // etc
-            &Row{Values: []uint64{1,1,2}},
-            &Row{Values: []uint64{1,2,1}},
-            &Row{Values: []uint64{1,1,1}},
+            &Row{Values: []uint64{33, 33, 33}},
+            &Row{Values: []uint64{33, 33, 33}},
+            &Row{Values: []uint64{33, 33, 33}},
         },
 
         Spec: &SquareSpec {
-            perfectRows: true,
-            perfectCols: true,
-            perfectDiagonals: true,
+            PerfectRows: true,
+            PerfectCols: true,
+            PerfectDiagonals: true,
         },
 
     }
 
-    fmt.Printf("square generated = %#v\n", s)
+    // fmt.Printf("square generated = %#v\n", s)
     fmt.Printf("square has perfect rows = %v\n", s.hasPerfectRows())
     fmt.Printf("square has perfect cols = %v\n", s.hasPerfectCols())
     fmt.Printf("square has perfect diagnonals = %v\n", s.hasPerfectDiagonals())
-    fmt.Printf("square is perfect = %v\n", s.isPerfect())
+    fmt.Printf("square is perfect = `%v` by Spec = %#v\n", s.isPerfect(), s.Spec)
 }
 
