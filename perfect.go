@@ -2,7 +2,8 @@ package main
 
 import (
     "fmt"
-    // "errors"
+    "time"
+    "golang.org/x/exp/rand"
 )
 
 // sliceHasSameValues determines if a uint64 slice only as the
@@ -73,6 +74,7 @@ type SquareSpec struct {
 type Square struct {
     Shape []*Row
     Spec *SquareSpec
+    Format uint64
 }
 
 // TODO: hasMethods should be implemented on the shape
@@ -144,38 +146,49 @@ func (s *Square) isPerfect() (isPerfect bool) {
 
     return isPerfect
 }
+
 // Prints the values to the console
 func (s *Square) showValues() {
     for i := 0; i < len(s.Shape[0].Values); i++ {
         for _, d := range s.Shape[i].Values {
-            fmt.Printf("|%d", d);
+            fmt.Printf("┋%d", d);
         }
-        fmt.Printf("|\n")
+        fmt.Printf("┋\n")
     }
+}
+
+// Generate a new pseudo-random square
+func (s *Square) generateRandom(limit uint64) (shape []*Row) {
+    rowTemp := []uint64{}
+    var i,j uint64
+    source := rand.NewSource(uint64(time.Now().UnixNano()))
+    random := rand.New(source)
+    for i = 0; i < s.Format; i++ {
+        for j = 0; j < s.Format; j++ {
+            rowTemp = append(rowTemp, random.Uint64n(limit))
+            if uint64(len(rowTemp)) == s.Format {
+                shape = append(shape, &Row{Values: rowTemp})
+                rowTemp = nil
+            }
+        }
+    }
+    s.Shape = shape
+    return shape
 }
 
 
 func main() {
     // A demo Square
     s := &Square{
-        Shape: []*Row{
-            // TODO: error handling to just provide
-            // square amount of Rows and RowValues
-            // 2 Rows 2 Values
-            // 4.Rows 4 Values
-            // etc
-            &Row{Values: []uint64{33, 33, 33}},
-            &Row{Values: []uint64{33, 33, 33}},
-            &Row{Values: []uint64{33, 33, 33}},
-        },
-
+        Format: 16,
         Spec: &SquareSpec {
             PerfectRows: true,
             PerfectCols: true,
-            PerfectDiagonals: true,
+            PerfectDiagonals: false,
         },
 
     }
+    s.generateRandom(10)
 
     // fmt.Printf("square generated = %#v\n", s)
     s.showValues()
