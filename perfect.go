@@ -64,6 +64,10 @@ type SquareSpec struct {
 	PerfectCols      bool
 	PerfectRows      bool
 	PerfectDiagonals bool
+        // TODO: Primes: false,
+        // TODO: PerfectMiddleDiagonals: false,
+        // TODO: PerfectCorners: false,
+        // TODO: PerfectUpperLowerTriangles: false
 }
 
 // Returns the default state for the SquareSpec
@@ -77,6 +81,20 @@ type Square struct {
 	Shape  []*Row
 	Spec   *SquareSpec
 	Format uint64
+}
+
+// Return if the square has duplicate cell values
+func (s *Square) hasDuplicateCellValues() bool {
+    seen := map[uint64]uint64{};
+    for _, row := range s.Shape {
+        for _, value := range row.Values {
+            if _, ok := seen[value]; ok {
+                return false
+            }
+            seen[value] = value
+        }
+    }
+    return false
 }
 
 // TODO: hasMethods should be implemented on the shape
@@ -136,6 +154,11 @@ func (s *Square) hasPerfectDiagonals() bool {
 // isPerfect tests a Square against its spec
 // FIXME: this is horrible.
 func (s *Square) isPerfect() (isPerfect bool) {
+        // TODO: make option
+        //if s.hasDuplicateCellValues() == false {
+        //    return false
+        //}
+
 	if s.Spec.hasFieldsDefault() {
 		return true
 	}
@@ -172,21 +195,6 @@ func (s *Square) isPerfect() (isPerfect bool) {
 	return isPerfect
 }
 
-// generates a new `perfect` square by the SquareSpec
-func (s *Square) NextBySpec(limit uint64) {
-	for {
-		s.generateRandom(limit)
-		if s.isPerfect() {
-			s.showValues()
-			fmt.Printf("square has perfect rows = %v\n", s.hasPerfectRows())
-			fmt.Printf("square has perfect cols = %v\n", s.hasPerfectCols())
-			fmt.Printf("square has perfect diagnonals = %v\n", s.hasPerfectDiagonals())
-			fmt.Printf("square is perfect = `%v` by Spec = %#v\n", s.isPerfect(), s.Spec)
-			break
-		}
-	}
-}
-
 // Prints the values to the console
 // TODO: make the shifting work for 10s,100s,...
 func (s *Square) showValues() {
@@ -202,12 +210,14 @@ func (s *Square) showValues() {
 	}
 }
 
-// Generate a new pseudo-random square
+// Generate a new pseudo-random square with duplicate cell values
 // TODO: optimize this:
 //       - remove the possiblity for equal squares
 //       - concurrent calculations for this
-//       -
-func (s *Square) generateRandom(limit uint64) (shape []*Row) {
+//       - NOTE: when using the fact that each cell has to
+//               contain a different number this approach does not work
+//               anymore..
+func (s *Square) generateRandomWithDups(limit uint64) (shape []*Row) {
 	rowTemp := []uint64{}
 	var i, j uint64
 	source := rand.NewSource(uint64(time.Now().UnixNano()))
@@ -225,25 +235,32 @@ func (s *Square) generateRandom(limit uint64) (shape []*Row) {
 	return shape
 }
 
+
 func main() {
-	// Defining the square
-	// -> Format: (4x4)
-	// -> Spec: must have perfect:
-	//    - rows
-	//    - cols
-	//    - diagonals
 	s := &Square{
-		Format: 4,
-		Spec: &SquareSpec{
-			PerfectRows:      true,
-			PerfectCols:      true,
-			PerfectDiagonals: true,
-		},
+	        // -> Format: (3x3)
+		Format: 3,
+
+	        // -> Spec: must have perfect:
+                //    - can have duplicate numbers
+	        //    - rows
+	        //    - cols
+	        //    - diagonals
+		Spec: &SquareSpec{true, false, false},
 	}
 
-	// This Returns the next pseudo-random
-	// Square by brute-forcing all combinations
-	// until a combination fulfills the spec defined
-	// above
-	s.NextBySpec(7)
+        // Return Next by Spec
+        limit := uint64(3)
+	for {
+		s.generateRandomWithDups(limit)
+		if s.isPerfect() {
+			s.showValues()
+			fmt.Printf("square has perfect rows = %v\n", s.hasPerfectRows())
+			fmt.Printf("square has perfect cols = %v\n", s.hasPerfectCols())
+			fmt.Printf("square has perfect diagnonals = %v\n", s.hasPerfectDiagonals())
+			fmt.Printf("square is perfect = `%v` by Spec = %#v\n", s.isPerfect(), s.Spec)
+			break
+		}
+	}
+
 }
