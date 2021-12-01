@@ -30,32 +30,65 @@ func fac(n uint64) (rs uint64) {
 
 // https://rosettacode.org/wiki/Permutations#Go
 // permuations of 1..N
+//func slicePermutations(begin, limit uint64) (perms [][]uint64) {
+//    a := rangeN(begin, 1, limit, true)
+//    fmt.Println("rangeN: ", a)
+//    n := uint64(len(a) - 1)
+//    var permTemp []uint64
+//    var c, i, j uint64
+//    for c = 1; c < fac(limit); c++ {
+//        i = n - 1
+//        j = n
+//        for a[i] > a[i+1] { i-- }
+//        for a[j] < a[i]   { j-- }
+//        a[i], a[j] = a[j], a[i]
+//        j = n
+//        i += 1
+//        for i < j {
+//            a[i], a[j] = a[j], a[i]
+//            i++
+//            j--
+//        }
+//        for _, aval := range a {
+//            permTemp = append(permTemp, aval)
+//        }
+//        perms = append(perms, permTemp)
+//        permTemp = nil
+//    }
+//    return perms
+//}
+
 func slicePermutations(begin, limit uint64) (perms [][]uint64) {
     a := rangeN(begin, 1, limit, true)
-    fmt.Println("rangeN: ", a)
-    n := uint64(len(a) - 1)
-    var permTemp []uint64
-    var c, i, j uint64
-    for c = 1; c < fac(limit); c++ {
-        i = n - 1
-        j = n
-        for a[i] > a[i+1] { i-- }
-        for a[j] < a[i]   { j-- }
-        a[i], a[j] = a[j], a[i]
-        j = n
-        i += 1
-        for i < j {
-            a[i], a[j] = a[j], a[i]
-            i++
-            j--
+    /*
+    $foreach $i1 in @list
+    $foreach $i2 in @list 
+        $if $i2==$i1
+            next
+        $foreach $i3 in @list
+            $if $i3==$i1 or $i3==$i2
+                next
+            print "$i1, $i2, $i3\n"
+    */
+    var i uint64
+    var j uint64
+    var k uint64
+    for i = 0; i < uint64(len(a)); i++ {
+        for j = 0; j < uint64(len(a)); j++ {
+            if a[i] == a[j] {
+                return
+            }
+
+            for k = 0; k < uint64(len(a)); k++ {
+                if a[k] == a[i] || a[k] == a[j] {
+                    return
+                }
+                fmt.Println(a[i], a[k], a[j])
+            }
         }
-        for _, aval := range a {
-            permTemp = append(permTemp, aval)
-        }
-        perms = append(perms, permTemp)
-        permTemp = nil
     }
-    return perms
+    return nil
+
 }
 
 // sliceHasSameValues determines if a uint64 slice only as the
